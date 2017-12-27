@@ -1,0 +1,228 @@
+ackage evaluacion3;
+
+import java.util.Scanner;
+
+
+public class Evaluacion3 {
+
+    public static void main(String[] args) {
+        
+        int cantidadDeProductos = 9;
+        Producto[] listado = new Producto[cantidadDeProductos];
+        
+        Proceso proceso = new Proceso();
+        
+        System.out.println("listado post lectura");
+        listado  = proceso.lecturaDeDatos(listado);
+        
+        System.out.println("\n\nse usaron la marca mortorola como producto de ejemplo para probar los metodos");
+       
+        System.out.print("El total de dinero para productos de tipo Celular es de "
+                +proceso.calculoDineroParaDeterminadoProducto(listado, cantidadDeProductos));
+        
+        
+        System.out.print("El total de dinero para productos de marca Motorola es de "
+                +proceso.calculoDineroParaDeterminadaMarca(listado, cantidadDeProductos));
+        
+    }
+    
+}
+---------------------------------------------
+
+package evaluacion3;
+
+
+public class Producto {
+    
+    private int codigo;
+    private String tipo;
+    private String modelo;
+    private String fabricante;
+    private int stock;
+    private int precio;
+
+    public Producto(int codigo, String tipo, String modelo, String fabricante, int stock, int precio) {
+        this.codigo = codigo;
+        this.tipo = tipo;
+        this.modelo = modelo;
+        this.fabricante = fabricante;
+        this.stock = stock;
+        this.precio = precio;
+    }
+    
+    public Producto (){
+        this.codigo = 0;
+        this.modelo = "";
+        this.fabricante = "";
+        this.stock = 0;
+        this.precio = 0;
+    }
+    
+    public int getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = Integer.parseInt(codigo);
+    }
+
+    public String getModelo() {
+        return modelo;
+    }
+
+    public void setModelo(String modelo) {
+        this.modelo = modelo;
+    }
+
+    public String getFabricante() {
+        return fabricante;
+    }
+
+    public void setFabricante(String fabricante) {
+        this.fabricante = fabricante;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(String stock) {
+        this.stock = Integer.parseInt(stock);
+    }
+
+    public int getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(String precio) {
+        this.precio = Integer.parseInt(precio);
+    }    
+    
+    public void setTipo(String tipo){
+        this.tipo = tipo;
+    }
+    
+    public String getTipo(){
+        return this.tipo;
+    }
+
+    @Override
+    public String toString() {
+        return "Producto{" + "codigo=" + codigo + ", tipo=" + tipo + ", modelo=" + modelo + ", fabricante=" + fabricante + ", stock=" + stock + ", precio=" + precio + '}';
+    }
+    
+}
+
+    
+
+---------------------------------------------------------------------------
+
+package evaluacion3;
+
+
+public class Proceso {
+    
+
+    public Producto[] lecturaDeDatos(Producto [] productos){
+        ManejoDeArchivos lectura = new ManejoDeArchivos();
+        lectura.lecturaBuffered(productos);
+        
+        return productos;
+    }
+    
+    public int calculoDineroTotal(Producto [] productos, int cantidadDeProductos){
+        int suma = 0;
+        for(int i = 0; i < cantidadDeProductos; i++){
+            suma += productos[i].getPrecio();
+        }
+        return suma;
+    }
+    
+    public int calculoDineroParaDeterminadoProducto(Producto [] productos, int cantidadDeProductos){
+        
+        int suma = 0;
+        for(int i = 0; i < cantidadDeProductos; i++){
+            if(productos[i].getTipo().equalsIgnoreCase("celular")){
+                suma += productos[i].getPrecio();
+            }
+        }
+        return suma;
+    }   
+    
+    public int calculoDineroParaDeterminadaMarca(Producto [] productos, int cantidadDeProductos){
+        
+        int suma = 0;
+        for(int i = 0; i < cantidadDeProductos; i++){
+            if(productos[i].getFabricante().equalsIgnoreCase("motorola")){
+                suma += productos[i].getPrecio();
+            }
+        }
+        return suma;
+    }
+}
+
+
+------------------------------------------------
+
+ackage evaluacion3;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
+public class ManejoDeArchivos {
+    
+    public static final String SEPARATOR = ";";
+    
+    private String obtenerDirectorio(){            
+        File directorio = new File ("");    
+        String aux = "";
+        
+        try{
+            aux = directorio.getCanonicalPath();
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+        return aux;
+    }
+    
+    public Producto[] lecturaBuffered(Producto[] productos) {
+        String ARCHIVO = obtenerDirectorio() + "/datos.txt";
+        BufferedReader input = null;
+        try {
+            input = new BufferedReader(new FileReader(ARCHIVO));
+            String linea = input.readLine();
+
+            Producto aux = new Producto();
+            int producto = 0;
+            while (linea != null) {
+                String[] datos = linea.split(SEPARATOR);
+
+                aux.setCodigo(datos[0]);
+                aux.setTipo(datos[1]);
+                aux.setModelo(datos[2]);
+                aux.setFabricante(datos[3]);
+                aux.setStock(datos[4]);
+                aux.setPrecio(datos[5]);
+
+                productos[producto] = aux;
+                
+                System.out.println(productos[producto].toString());
+                producto++;
+                linea = input.readLine();
+            }
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        } finally {
+            try {
+               input.close();
+            } catch (IOException ex) {
+                System.out.println("Imposible abrir este archivo");
+            }
+        }
+        return productos;
+    }
+}
+    
